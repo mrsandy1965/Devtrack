@@ -1,9 +1,5 @@
 
----
-
-# 2️⃣ sequenceDiagram.md  
-(Main Flow: User logs in → GitHub sync → Career Score update)
-
+# Sequence Diagram
 ```mermaid
 sequenceDiagram
     actor User

@@ -1,1 +1,60 @@
-[![](https://mermaid.ink/img/pako:eNp1lEuP2jAQx79K5FMfgHgsiRMhJMR21V6qqmwvVS7GmQ0WxkZ-VKWU796JCSGkcMLz8Pxm_uNwJFwXQDLCJbP2WbDSsF2uchXs6IcFEx1zFUUfV84IVUaiaFuK7aBtw44J2XaUwm38uirTpEpdCvXufTj7fcEcfDP6TUiofKcr-9UwvmVrCZ-UE-5wbmM2Y2vrMOLm8zYHM-S5_DMWjLgB_CkWLrg4k9zLM6g0YG1NL8Et9W4vwQmtvmO808FnthbudnwD3BsDip9hQrkI2wG2vYy24E78wnZrRINehawO4ItyKIzdiP1iv5eCs6qRWyDHBpk6fO0IbbS8sa1jztuWpqvg6PBeNPd2hQJcMdUEhTeBfNUPyxn3KmpmY5l6KlBFY7bKL5kBMCuuDe4Mlww1oxFhqZUV1qF8h5DVFenFKwXyfkgodo0EaHicORnlJOr353j6gKewswexu3I_yG1LVcG6r3H2t9-_wHL1_-RVparwo1h99X7wQaP3k9udkh4pjShI5oyHHsEV4QeJJgmLyInbAO6UZHgsmNnmBKXEO_jCfmq9u1wz2pcbkr0xadE6v6f6r6Hx4jdQgFlqrxzJpnQaipDsSH6TbJwOB5ROxlM6oTROaPrUIweSJePB02Sa0jRNRmlCp_GpR_4E7HAQx8l4FCcJpcNhGo_Gp3-jrJPQ?type=png)](https://mermaid.live/edit#pako:eNp1lEuP2jAQx79K5FMfgHgsiRMhJMR21V6qqmwvVS7GmQ0WxkZ-VKWU796JCSGkcMLz8Pxm_uNwJFwXQDLCJbP2WbDSsF2uchXs6IcFEx1zFUUfV84IVUaiaFuK7aBtw44J2XaUwm38uirTpEpdCvXufTj7fcEcfDP6TUiofKcr-9UwvmVrCZ-UE-5wbmM2Y2vrMOLm8zYHM-S5_DMWjLgB_CkWLrg4k9zLM6g0YG1NL8Et9W4vwQmtvmO808FnthbudnwD3BsDip9hQrkI2wG2vYy24E78wnZrRINehawO4ItyKIzdiP1iv5eCs6qRWyDHBpk6fO0IbbS8sa1jztuWpqvg6PBeNPd2hQJcMdUEhTeBfNUPyxn3KmpmY5l6KlBFY7bKL5kBMCuuDe4Mlww1oxFhqZUV1qF8h5DVFenFKwXyfkgodo0EaHicORnlJOr353j6gKewswexu3I_yG1LVcG6r3H2t9-_wHL1_-RVparwo1h99X7wQaP3k9udkh4pjShI5oyHHsEV4QeJJgmLyInbAO6UZHgsmNnmBKXEO_jCfmq9u1wz2pcbkr0xadE6v6f6r6Hx4jdQgFlqrxzJpnQaipDsSH6TbJwOB5ROxlM6oTROaPrUIweSJePB02Sa0jRNRmlCp_GpR_4E7HAQx8l4FCcJpcNhGo_Gp3-jrJPQ)
+# Class Diagram
+```mermaid
+classDiagram
+
+class User {
+  +String id
+  +String name
+  +String email
+  +String githubUsername
+  +login()
+  +updateProfile()
+}
+
+class TrackableEntity {
+  <<abstract>>
+  +String title
+  +Date createdAt
+  +calculateProgress()
+  +getCompletionRate()
+}
+
+class Habit {
+  +String recurrence
+  +int streak
+  +logActivity()
+  +calculateStreak()
+}
+
+class InternshipApplication {
+  +String companyName
+  +String role
+  +String status
+  +updateStatus()
+}
+
+class FocusSession {
+  +int duration
+  +Date startTime
+  +startTimer()
+  +endTimer()
+}
+
+class CareerScoreEngine {
+  +calculateConsistencyScore()
+  +calculateFunnelScore()
+  +calculateFinalScore()
+}
+
+User "1" --> "*" Habit
+User "1" --> "*" InternshipApplication
+User "1" --> "*" FocusSession
+
+TrackableEntity <|-- Habit
+
+CareerScoreEngine --> User
+CareerScoreEngine --> Habit
+CareerScoreEngine --> InternshipApplication
+CareerScoreEngine --> FocusSession
+
+```

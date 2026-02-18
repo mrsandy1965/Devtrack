@@ -1,1 +1,52 @@
-[![](https://mermaid.ink/img/pako:eNqdU01vozAQ_SvWnNMIFgipb9k03aKtkqgklxVS5GIvsQo2Ghtt0zT_vQ5JW4i0qlQu4Gd75n0Me8g1F0BB4I1kBbIqU5lap7MHss8UcY-xKFVBJCfL3z1EsUr0AFExWfaQmhnzTyPvgYW02-ZxbQR-VpDKkpyhEJjmGh14ONK4m_xMVl_yaFylhJPbPmqlLfv07K7uAyjyBlGovEPCbQn21O2_uV_8-pLDlj1K2yHBmRWk1MWNe3cU6qqSdqobZc8dkvlq9jBP75LlZrJc3ifTySpZzL8p2ZWvmdrNL3NBfeGEscw2psOU1XUpBT-xbYndLqbrdJPO0vQbfI5aeYPMSq06XYwwxiGfnrwPkrbCnPu2k_f6enWl9-QUPyW5i6Q9cQK6u2041Nlv-lf_4ys9K7043RdLj8EZGECBkgO12IgBVALddLsltF5kYLfC2QzUfXKGTxk4Ae6OC-CP1tX7NdRNsQX6l5XGrZr66MP5P_tA3QRyge1UAA3jtgbQPTwDDYLR0A_9aDyOf0SBF4fBAHZA_dAbetdxcD0KgzAa-1F0GMBL29YbRqNg7MXBKI7C2PO94PAGwD5CHA?type=png)](https://mermaid.live/edit#pako:eNqdU01vozAQ_SvWnNMIFgipb9k03aKtkqgklxVS5GIvsQo2Ghtt0zT_vQ5JW4i0qlQu4Gd75n0Me8g1F0BB4I1kBbIqU5lap7MHss8UcY-xKFVBJCfL3z1EsUr0AFExWfaQmhnzTyPvgYW02-ZxbQR-VpDKkpyhEJjmGh14ONK4m_xMVl_yaFylhJPbPmqlLfv07K7uAyjyBlGovEPCbQn21O2_uV_8-pLDlj1K2yHBmRWk1MWNe3cU6qqSdqobZc8dkvlq9jBP75LlZrJc3ifTySpZzL8p2ZWvmdrNL3NBfeGEscw2psOU1XUpBT-xbYndLqbrdJPO0vQbfI5aeYPMSq06XYwwxiGfnrwPkrbCnPu2k_f6enWl9-QUPyW5i6Q9cQK6u2041Nlv-lf_4ys9K7043RdLj8EZGECBkgO12IgBVALddLsltF5kYLfC2QzUfXKGTxk4Ae6OC-CP1tX7NdRNsQX6l5XGrZr66MP5P_tA3QRyge1UAA3jtgbQPTwDDYLR0A_9aDyOf0SBF4fBAHZA_dAbetdxcD0KgzAa-1F0GMBL29YbRqNg7MXBKI7C2PO94PAGwD5CHA)
+# ER-Diagram
+
+```mermaid
+erDiagram
+
+USER {
+    string id PK
+    string name
+    string email
+    string password
+    string githubUsername
+    int careerScore
+}
+
+HABIT {
+    string id PK
+    string userId FK
+    string title
+    string type
+    string recurrence
+    int streak
+}
+
+HABIT_LOG {
+    string id PK
+    string habitId FK
+    date logDate
+    int commitCount
+}
+
+INTERNSHIP_APPLICATION {
+    string id PK
+    string userId FK
+    string companyName
+    string role
+    string status
+    date appliedDate
+}
+
+FOCUS_SESSION {
+    string id PK
+    string userId FK
+    int duration
+    date sessionDate
+    string notes
+}
+
+USER ||--o{ HABIT : creates
+HABIT ||--o{ HABIT_LOG : has
+USER ||--o{ INTERNSHIP_APPLICATION : applies
+USER ||--o{ FOCUS_SESSION : logs
+

@@ -1,1 +1,27 @@
-[![](https://mermaid.ink/img/pako:eNpVkl1r2zAUhv-KEBQUSDN_y_bFIEvYWuhgJMsuZvVCsVVbNJaMJLdLQ_77JNst9Y3l57znW7rAUlYM5vDpJF_LhioDHnZEEHFzA9alkUoTcdBMIeS-iwURP7i5648FGk-w_nW_eJwC9mdtWAu-yV5UVJ2J0P2xVrRrwJa9_Fa0fJ5cnP9h46Nix2puDQp8AQ-y5uJx4YQAFRspBCsNeK9SljapGeXQyopRw2zUTypozcAdPfJJjVBhU4GNrLio3Qz8hZvzqMWo-MPZK9hS3RwlVdVoTlCxN27077LsNdgzrbmcesGoWFcVuBe2S6Eb3oF11514Sc2HS4qKQ1e5fj5JwGY0vR49sqnuhipmh92XUjGnEMFENS1vx05DoKsxLR3c3n4Fdk8zCmYUziiaUTyjZEZ4RumMsvF6ggHHCxgW-4nhEtaKVzA3qmdL2DLVUofwQgQABJqGtYzA3P7al_BMIBFXG9NR8VfK9j1Myb5uYP5ET9pSP-xwy6l9Mu2HVdkNMbVxtw_zEHtDEphf4D-LQbryPB_7sY_DCOMlPMPcj7NVHAVekvqhn8QYR9clfBuqeqskSJMoTuMsTHCWhvH1Px8Y9_g?type=png)](https://mermaid.live/edit#pako:eNpVkl1r2zAUhv-KEBQUSDN_y_bFIEvYWuhgJMsuZvVCsVVbNJaMJLdLQ_77JNst9Y3l57znW7rAUlYM5vDpJF_LhioDHnZEEHFzA9alkUoTcdBMIeS-iwURP7i5648FGk-w_nW_eJwC9mdtWAu-yV5UVJ2J0P2xVrRrwJa9_Fa0fJ5cnP9h46Nix2puDQp8AQ-y5uJx4YQAFRspBCsNeK9SljapGeXQyopRw2zUTypozcAdPfJJjVBhU4GNrLio3Qz8hZvzqMWo-MPZK9hS3RwlVdVoTlCxN27077LsNdgzrbmcesGoWFcVuBe2S6Eb3oF11514Sc2HS4qKQ1e5fj5JwGY0vR49sqnuhipmh92XUjGnEMFENS1vx05DoKsxLR3c3n4Fdk8zCmYUziiaUTyjZEZ4RumMsvF6ggHHCxgW-4nhEtaKVzA3qmdL2DLVUofwQgQABJqGtYzA3P7al_BMIBFXG9NR8VfK9j1Myb5uYP5ET9pSP-xwy6l9Mu2HVdkNMbVxtw_zEHtDEphf4D-LQbryPB_7sY_DCOMlPMPcj7NVHAVekvqhn8QYR9clfBuqeqskSJMoTuMsTHCWhvH1Px8Y9_g)
+# Use Case Diagram
+```mermaid
+usecaseDiagram
+    actor "Student" as S
+    package "DevTrack System" {
+        usecase "Register / Login" as UC1
+        usecase "Connect GitHub" as UC2
+        usecase "Track Habits" as UC3
+        usecase "Log Focus Sessions" as UC4
+        usecase "Apply for Internships" as UC5
+        usecase "View Career Score" as UC6
+        usecase "View Analytics" as UC7
+    }
+
+    S --> UC1
+    S --> UC2
+    S --> UC3
+    S --> UC4
+    S --> UC5
+    S --> UC6
+    S --> UC7
+
+    UC2 ..> UC7 : <<include>>
+    UC3 ..> UC7 : <<include>>
+    UC4 ..> UC7 : <<include>>
+    UC5 ..> UC7 : <<include>>
+```
