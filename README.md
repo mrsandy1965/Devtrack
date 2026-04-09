@@ -1,77 +1,113 @@
-# DevTrack
+# 🚀 DevTrack – Career Operating System for Developers
 
-DevTrack is a full-stack web application that helps aspiring developers track coding consistency, internship applications, and career growth in one place.
+> A full-stack web application for aspiring software engineers to track coding habits, internship applications, and career readiness.
 
-It connects daily execution (coding, projects, applications) with measurable progress using analytics and structured tracking.
-
----
-
-## 🚩 Problem
-
-Most students:
-- Track coding inconsistently
-- Apply to internships randomly
-- Cannot measure real skill growth
-- Use generic habit apps that don't relate to career progress
-
-DevTrack solves this by combining:
-- Coding streak tracking (GitHub integration)
-- Internship pipeline management
-- Career readiness scoring
-- Focus session logging
+[![Node.js](https://img.shields.io/badge/Node.js-v20-green)](https://nodejs.org)
+[![Express](https://img.shields.io/badge/Express-v4.18-lightgrey)](https://expressjs.com)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-green)](https://mongoosejs.com)
+[![React](https://img.shields.io/badge/React-v18-blue)](https://react.dev)
 
 ---
 
-## 🎯 Core Features (MVP)
+## 📌 What is DevTrack?
 
-- Create and manage coding habits
-- GitHub commit sync
-- Streak tracking
-- Internship application tracker
-- Career score dashboard
-- Pomodoro focus sessions
+DevTrack is a **Career Operating System** — not just a habit tracker. It connects daily coding effort, internship application tracking, and focus sessions into a unified **Career Score** (0–100).
 
 ---
 
-## 🛠 Tech Stack
+## 🏗 Architecture
 
-Frontend:
-- React.js
-- Recharts (for analytics)
+```
+server/
+  config/         → DB singleton (Singleton Pattern)
+  models/         → Mongoose schemas (TrackableEntity mixin for OOP)
+  repositories/   → BaseRepository + 5 entity repos (Repository Pattern)
+  services/       → Business logic layer (6 services)
+  controllers/    → Thin HTTP layer (6 controllers)
+  routes/         → 6 route files
+  middleware/     → JWT auth, global error handler
+  utils/
+    CareerScoreEngine.js  → Strategy Pattern (4 scoring strategies)
+    GitHubAdapter.js      → Adapter Pattern (wraps GitHub REST API)
 
-Backend:
-- Node.js
-- Express.js
-- MongoDB
-- JWT Authentication
-- GitHub API
+client/
+  src/
+    pages/        → Dashboard, Habits, Internships, Focus, GitHub
+    components/   → Sidebar
+    context/      → AuthContext
+    api/          → Axios services layer
+```
+
+### Design Patterns Applied
+
+| Pattern | Implementation |
+|---|---|
+| **Repository** | `BaseRepository` → 5 entity repositories |
+| **Strategy** | `CareerScoreEngine` – 4 scoring strategies (40/30/20/10%) |
+| **Singleton** | DB connection, CareerScoreEngine, GitHubAdapter |
+| **Adapter** | `GitHubAdapter` wraps GitHub REST API |
+
+### OOP Principles
+
+| Principle | Where |
+|---|---|
+| **Encapsulation** | Business logic sealed in Services, hidden from controllers |
+| **Abstraction** | `BaseRepository` abstract class, `ScoringStrategy` abstract class |
+| **Inheritance** | All repos extend `BaseRepository`; concrete strategies extend `ScoringStrategy` |
+| **Polymorphism** | `CareerScoreEngine.calculate()` calls `.calculate()` on any strategy |
 
 ---
 
-## 🧠 Architecture Principles
+## 🔋 Tech Stack
 
-- Object-Oriented backend structure
-- Clear separation of concerns
-- Service layer for business logic
-- Analytics engine for career scoring
+**Backend:** Node.js, Express.js, MongoDB, Mongoose, JWT, bcryptjs, Axios  
+**Frontend:** React 18, Vite, React Router, Recharts, CSS (glassmorphism dark mode)
 
 ---
 
-## 🚀 Project Status
+## 🚀 Running Locally
 
-Currently in development (MVP Phase)
+### Backend
+```bash
+cd server
+cp .env.example .env  # fill in MONGO_URI and JWT_SECRET
+npm install
+npm run dev           # runs on port 5000
+```
 
-Planned roadmap:
-- GitHub sync
-- Internship funnel analytics
-- Career score engine
-- Focus tracking
+### Frontend
+```bash
+cd client
+npm install
+npm run dev           # runs on port 5173
+```
 
 ---
 
-## 📌 Vision
+## 📡 API Endpoints
 
-DevTrack aims to become a structured career execution system for developers — not just a habit tracker.
+| Method | Route | Description |
+|---|---|---|
+| POST | `/api/auth/register` | Register |
+| POST | `/api/auth/login` | Login + JWT |
+| GET | `/api/auth/me` | Current user |
+| GET/POST | `/api/habits` | List / Create habits |
+| POST | `/api/habits/:id/log` | Log activity |
+| GET/POST | `/api/internships` | List / Add applications |
+| PATCH | `/api/internships/:id/status` | Update pipeline status |
+| GET | `/api/internships/stats` | Funnel analytics |
+| POST | `/api/focus/start` | Start Pomodoro session |
+| PATCH | `/api/focus/:id/end` | End session |
+| POST | `/api/github/connect` | Link GitHub |
+| GET | `/api/github/sync` | Sync commits |
+| GET | `/api/dashboard` | Aggregated dashboard |
 
 ---
 
+## 🎓 SESD Project – Milestone Documentation
+
+- [idea.md](./idea.md) – Project scope + key features  
+- [useCaseDiagram.md](./useCaseDiagram.md) – Use case diagram  
+- [sequenceDiagram.md](./sequenceDiagram.md) – Main flow end-to-end  
+- [classDiagram.md](./classDiagram.md) – Major classes + relationships  
+- [ErDiagram.md](./erDiagram.md) – ER diagram  
