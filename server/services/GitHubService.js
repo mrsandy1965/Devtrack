@@ -1,7 +1,9 @@
 const GitHubAdapter = require('../utils/GitHubAdapter');
 const HabitLogRepository = require('../repositories/HabitLogRepository');
+const HabitRepository = require('../repositories/HabitRepository');
 const UserRepository = require('../repositories/UserRepository');
 const CareerScoreEngine = require('../utils/CareerScoreEngine');
+const Habit = require('../models/Habit');
 
 class GitHubService {
   async syncCommits(user) {
@@ -9,29 +11,55 @@ class GitHubService {
       throw new Error('No GitHub username linked. Please connect GitHub first.');
     }
 
-    const token = user.githubToken || null;
+    // Fetch full user record including the hidden githubToken field
+    const fullUser = await UserRepository.findByIdWithToken(user._id);
+    const token = fullUser.githubToken || null;
+
     const { totalCommits, dailyCounts } = await GitHubAdapter.getCommitCountLastNDays(
       user.githubUsername,
       token,
       30
     );
 
-    // Save each day's commit count as a github-sourced habit log
+    // Find or create a GitHub-linked habit to attach logs to
+    let habits = await HabitRepository.findByUser(user._id);
+    let githubHabit = habits.find((h) => h.githubLinked) || habits[0];
+
+    // Auto-create a "GitHub Activity" habit if the user has none
+    if (!githubHabit) {
+      githubHabit = await Habit.create({
+        userId: user._id,
+        title: 'GitHub Activity',
+        type: 'project',
+        recurrence: 'daily',
+        githubLinked: true,
+        isActive: true,
+      });
+    }
+
+    // Upsert each day's commit count as a github-sourced habit log
     let saved = 0;
     for (const [dateStr, count] of Object.entries(dailyCounts)) {
-      const habits = await require('../repositories/HabitRepository').findByUser(user._id);
-      const githubHabit = habits.find((h) => h.githubLinked) || habits[0];
-      if (!githubHabit) continue;
+      const logDate = new Date(dateStr);
 
-      await HabitLogRepository.create({
-        habitId: githubHabit._id,
-        userId: user._id,
-        logDate: new Date(dateStr),
-        commitCount: count,
-        source: 'github',
-        completed: true,
-      });
-      saved++;
+      // Check if a github log already exists for this day to avoid duplicates
+      const existing = await HabitLogRepository.findByHabitAndDateRange(
+        githubHabit._id,
+        new Date(logDate.setHours(0, 0, 0, 0)),
+        new Date(logDate.setHours(23, 59, 59, 999))
+      );
+
+      if (existing.length === 0) {
+        await HabitLogRepository.create({
+          habitId: githubHabit._id,
+          userId: user._id,
+          logDate: new Date(dateStr),
+          commitCount: count,
+          source: 'github',
+          completed: true,
+        });
+        saved++;
+      }
     }
 
     // Recalculate career score
@@ -50,11 +78,10 @@ class GitHubService {
   }
 
   async connectGithub(userId, githubUsername, token = null) {
-    // Verify the username exists
+    // Verify the username exists on GitHub
     const info = await GitHubAdapter.getUserInfo(githubUsername, token);
-
     await UserRepository.saveGithubToken(userId, token, githubUsername);
-    return { githubUsername: info.login, avatarUrl: info.avatar_url };
+    return { githubUsername: info.login, avatarUrl: info.avatar_url, name: info.name, publicRepos: info.public_repos };
   }
 }
 

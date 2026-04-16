@@ -11,10 +11,11 @@ class InternshipRepository extends BaseRepository {
   }
 
   async getConversionStats(userId) {
+    const mongoose = require('mongoose');
+    const oid = new mongoose.Types.ObjectId(userId.toString());
+
     const stats = await InternshipApplication.aggregate([
-      { $match: { userId: require('mongoose').Types.ObjectId.createFromHexString
-          ? require('mongoose').Types.ObjectId.createFromHexString(userId.toString())
-          : new (require('mongoose').Types.ObjectId)(userId.toString()) } },
+      { $match: { userId: oid } },
       {
         $group: {
           _id: '$status',

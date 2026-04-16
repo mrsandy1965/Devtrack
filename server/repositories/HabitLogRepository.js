@@ -28,15 +28,16 @@ class HabitLogRepository extends BaseRepository {
   }
 
   async getHeatmapData(userId, days = 90) {
+    const mongoose = require('mongoose');
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
+
+    const oid = new mongoose.Types.ObjectId(userId.toString());
 
     return HabitLog.aggregate([
       {
         $match: {
-          userId: require('mongoose').Types.ObjectId.createFromHexString
-            ? require('mongoose').Types.ObjectId.createFromHexString(userId.toString())
-            : new (require('mongoose').Types.ObjectId)(userId.toString()),
+          userId: oid,
           logDate: { $gte: startDate },
         },
       },

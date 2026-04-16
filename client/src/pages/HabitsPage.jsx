@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { habitsAPI } from '../api/services';
-
-const HABIT_TYPES = ['dsa', 'project', 'learning', 'other'];
-const TYPE_ICONS = { dsa: '🧩', project: '🛠️', learning: '📚', other: '⭐' };
+import { HabitTypeIcon, IconPlus, IconCheck, IconTrash } from '../components/Icons';
 
 function HabitModal({ onClose, onSave }) {
   const [form, setForm] = useState({ title: '', type: 'dsa', recurrence: 'daily', targetPerDay: 1, githubLinked: false });
@@ -35,7 +33,10 @@ function HabitModal({ onClose, onSave }) {
             <div className="form-group">
               <label className="form-label">Type</label>
               <select className="form-select" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
-                {HABIT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                <option value="dsa">DSA</option>
+                <option value="project">Project</option>
+                <option value="learning">Learning</option>
+                <option value="other">Other</option>
               </select>
             </div>
             <div className="form-group">
@@ -79,23 +80,22 @@ export default function HabitsPage() {
   const handleCreate = async (data) => {
     const res = await habitsAPI.create(data);
     setHabits((prev) => [res.data.habit, ...prev]);
-    showToast('✅ Habit created!');
+    showToast('Habit created successfully');
   };
 
   const handleLog = async (habitId) => {
     try {
       const res = await habitsAPI.log(habitId, { source: 'manual', notes: '' });
       setHabits((prev) => prev.map((h) => h._id === habitId ? { ...h, streak: res.data.streak } : h));
-      showToast(`🔥 Logged! Streak: ${res.data.streak} days`);
+      showToast(`Logged! Streak: ${res.data.streak} days`);
     } catch (err) {
-      showToast('❌ ' + (err.response?.data?.message || 'Failed to log'));
+      showToast(err.response?.data?.message || 'Failed to log');
     }
   };
 
   const handleDelete = async (id) => {
     await habitsAPI.remove(id);
     setHabits((prev) => prev.filter((h) => h._id !== id));
-    showToast('Habit removed');
   };
 
   if (loading) return <div className="loading-screen"><div className="loader" /></div>;
@@ -108,39 +108,54 @@ export default function HabitsPage() {
           <p className="page-subtitle">Build consistency, one day at a time</p>
         </div>
         <button id="create-habit-btn" className="btn btn-primary" onClick={() => setShowModal(true)}>
-          + New Habit
+          <IconPlus size={16} /> New Habit
         </button>
       </div>
 
       {habits.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-state-icon">🔥</div>
+          <div className="empty-state-icon"><IconFlameEmpty /></div>
           <div className="empty-state-text">No habits yet. Create your first one!</div>
-          <button className="btn btn-primary" onClick={() => setShowModal(true)}>Create Habit</button>
+          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+            <IconPlus size={16} /> Create Habit
+          </button>
         </div>
       ) : (
         <div className="flex-col gap-12">
           {habits.map((habit) => (
             <div key={habit._id} className="habit-card">
               <div className="flex gap-16" style={{ alignItems: 'center', flex: 1 }}>
-                <span style={{ fontSize: 28 }}>{TYPE_ICONS[habit.type] || '⭐'}</span>
+                <div style={{
+                  width: 44, height: 44, borderRadius: 10,
+                  background: 'var(--accent-glow)',
+                  border: '1px solid var(--border-accent)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0,
+                }}>
+                  <HabitTypeIcon type={habit.type} size={22} />
+                </div>
                 <div>
                   <div style={{ fontWeight: 600, fontSize: 15 }}>{habit.title}</div>
                   <div className="text-xs text-muted mt-4">
                     {habit.recurrence} · {habit.type}
-                    {habit.githubLinked && ' · 🐙 GitHub linked'}
+                    {habit.githubLinked && (
+                      <span style={{ marginLeft: 6, color: 'var(--accent-light)' }}>· GitHub linked</span>
+                    )}
                   </div>
                 </div>
               </div>
               <div className="flex gap-12" style={{ alignItems: 'center' }}>
                 <div className="habit-streak">
-                  🔥 <span>{habit.streak}</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--warning)" style={{ flexShrink: 0 }}>
+                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+                  </svg>
+                  <span>{habit.streak}</span>
                 </div>
                 <button id={`log-habit-${habit._id}`} className="btn btn-success btn-sm" onClick={() => handleLog(habit._id)}>
-                  ✓ Log
+                  <IconCheck size={14} /> Log
                 </button>
-                <button className="btn btn-ghost btn-sm" onClick={() => handleDelete(habit._id)} style={{ color: 'var(--danger)' }}>
-                  🗑
+                <button className="btn btn-danger btn-icon btn-sm" onClick={() => handleDelete(habit._id)} title="Remove habit">
+                  <IconTrash size={14} />
                 </button>
               </div>
             </div>
@@ -151,5 +166,13 @@ export default function HabitsPage() {
       {showModal && <HabitModal onClose={() => setShowModal(false)} onSave={handleCreate} />}
       {toast && <div className="toast">{toast}</div>}
     </div>
+  );
+}
+
+function IconFlameEmpty() {
+  return (
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+    </svg>
   );
 }

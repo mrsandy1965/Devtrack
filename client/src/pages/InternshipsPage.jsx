@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { internshipsAPI } from '../api/services';
+import { IconPlus, IconTrash } from '../components/Icons';
 
 const STATUSES = ['Applied', 'OA', 'Interview', 'Rejected', 'Offer'];
 const STATUS_COLORS = {
@@ -113,7 +114,7 @@ export default function InternshipsPage() {
           </p>
         </div>
         <button id="add-app-btn" className="btn btn-primary" onClick={() => setShowModal(true)}>
-          + Add Application
+          <IconPlus size={16} /> Add Application
         </button>
       </div>
 
@@ -149,8 +150,10 @@ export default function InternshipsPage() {
                         → {s}
                       </button>
                     ))}
-                    <button className="btn btn-danger" style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4 }}
-                      onClick={() => handleDelete(app._id)}>🗑</button>
+                    <button className="btn btn-danger btn-icon" style={{ padding: '2px 6px', borderRadius: 4 }}
+                      onClick={() => handleDelete(app._id)} title="Delete">
+                      <IconTrash size={12} />
+                    </button>
                   </div>
                 </div>
               ))}

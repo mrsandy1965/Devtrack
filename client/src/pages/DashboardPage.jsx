@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { dashboardAPI } from '../api/services';
 import {
-  RadialBarChart, RadialBar, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
+  BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer,
 } from 'recharts';
+import { IconFlame, IconBriefcase, IconTimer, IconStar, IconCheck, IconCode } from '../components/Icons';
 
 function ScoreRing({ score }) {
   const r = 70;
@@ -41,10 +41,12 @@ function ScoreRing({ score }) {
   );
 }
 
-function StatCard({ icon, label, value, sub, color = 'var(--accent-light)' }) {
+function StatCard({ Icon, label, value, sub, color = 'var(--accent-light)' }) {
   return (
     <div className="card flex-col gap-8">
-      <div style={{ fontSize: 24 }}>{icon}</div>
+      <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--accent-glow)', border: '1px solid var(--border-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Icon size={18} color={color} />
+      </div>
       <div className="card-title">{label}</div>
       <div className="card-value" style={{ color }}>{value}</div>
       {sub && <div className="text-xs text-muted">{sub}</div>}
@@ -129,12 +131,12 @@ export default function DashboardPage() {
         <ScoreRing score={data?.careerScore || 0} />
 
         <div className="grid-3">
-          <StatCard icon="🔥" label="Top Streak" value={`${data?.habits?.topStreak || 0}d`} sub="Current best" color="var(--warning)" />
-          <StatCard icon="📋" label="Habits Active" value={data?.habits?.total || 0} sub="Tracked habits" />
-          <StatCard icon="💼" label="Applications" value={data?.internships?.total || 0} sub={`Offer rate: ${data?.internships?.offerRate || 0}%`} color="var(--success)" />
-          <StatCard icon="⏱️" label="Focus (7d)" value={`${data?.focus?.totalMinutes || 0}m`} sub={`${data?.focus?.sessionCount || 0} sessions`} color="var(--info)" />
-          <StatCard icon="🎯" label="Interviews" value={data?.internships?.Interview || 0} sub="Cleared OA" color="var(--accent-light)" />
-          <StatCard icon="✅" label="Offers" value={data?.internships?.Offer || 0} sub="Accepted offers" color="var(--success)" />
+          <StatCard Icon={IconFlame}     label="Top Streak"   value={`${data?.habits?.topStreak || 0}d`}        sub="Current best"                                         color="var(--warning)" />
+          <StatCard Icon={IconCode}      label="Habits Active" value={data?.habits?.total || 0}                  sub="Tracked habits" />
+          <StatCard Icon={IconBriefcase} label="Applications"  value={data?.internships?.total || 0}             sub={`Offer rate: ${data?.internships?.offerRate || 0}%`}  color="var(--success)" />
+          <StatCard Icon={IconTimer}     label="Focus (7d)"    value={`${data?.focus?.totalMinutes || 0}m`}      sub={`${data?.focus?.sessionCount || 0} sessions`}          color="var(--info)" />
+          <StatCard Icon={IconStar}      label="Interviews"    value={data?.internships?.Interview || 0}         sub="Cleared OA"                                           color="var(--accent-light)" />
+          <StatCard Icon={IconCheck}     label="Offers"        value={data?.internships?.Offer || 0}             sub="Accepted offers"                                      color="var(--success)" />
         </div>
       </div>
 

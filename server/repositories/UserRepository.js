@@ -18,6 +18,11 @@ class UserRepository extends BaseRepository {
     return User.findOne({ githubUsername });
   }
 
+  // Explicitly selects githubToken (which is select:false by default)
+  async findByIdWithToken(userId) {
+    return User.findById(userId).select('+githubToken');
+  }
+
   async updateCareerScore(userId, score) {
     return User.findByIdAndUpdate(userId, { careerScore: score }, { new: true });
   }

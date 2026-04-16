@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { focusAPI, habitsAPI } from '../api/services';
+import { IconPlay, IconStop, IconReset, IconTimer } from '../components/Icons';
 
 function formatTime(seconds) {
   const m = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -41,7 +42,7 @@ export default function FocusPage() {
       setRunning(false);
       clearInterval(intervalRef.current);
       handleEnd();
-      showToast('🎉 Focus session complete!');
+      showToast('Focus session complete!');
     }
     return () => clearInterval(intervalRef.current);
   }, [running, timeLeft]);
@@ -53,7 +54,7 @@ export default function FocusPage() {
       setTimeLeft(duration * 60);
       setRunning(true);
     } catch (err) {
-      showToast('❌ Failed to start session');
+      showToast('Failed to start session');
     }
   };
 
@@ -65,9 +66,7 @@ export default function FocusPage() {
       setRunning(false);
       clearInterval(intervalRef.current);
       await loadHistory();
-    } catch (err) {
-      console.error(err);
-    }
+    } catch (err) { console.error(err); }
   };
 
   const handleReset = () => {
@@ -111,8 +110,9 @@ export default function FocusPage() {
                 </linearGradient>
               </defs>
             </svg>
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 4 }}>
               <span className="timer-display" style={{ fontSize: 52 }}>{formatTime(timeLeft)}</span>
+              <span className="text-xs text-muted">{running ? 'Focus in progress' : 'Ready to focus'}</span>
             </div>
           </div>
 
@@ -137,11 +137,17 @@ export default function FocusPage() {
 
           <div className="flex gap-12">
             {!running ? (
-              <button id="start-focus-btn" className="btn btn-primary" onClick={handleStart}>▶ Start</button>
+              <button id="start-focus-btn" className="btn btn-primary" onClick={handleStart}>
+                <IconPlay size={16} /> Start
+              </button>
             ) : (
               <>
-                <button id="end-focus-btn" className="btn btn-success" onClick={handleEnd}>✓ End</button>
-                <button className="btn btn-ghost" onClick={handleReset}>↺ Reset</button>
+                <button id="end-focus-btn" className="btn btn-success" onClick={handleEnd}>
+                  <IconStop size={16} /> End Session
+                </button>
+                <button className="btn btn-ghost" onClick={handleReset}>
+                  <IconReset size={16} /> Reset
+                </button>
               </>
             )}
           </div>
@@ -165,7 +171,10 @@ export default function FocusPage() {
           )}
 
           <div className="card">
-            <div className="card-title mb-16">Recent Sessions</div>
+            <div className="flex-between mb-16">
+              <div className="card-title">Recent Sessions</div>
+              <IconTimer size={16} color="var(--text-muted)" />
+            </div>
             {history.length === 0 ? (
               <div className="text-muted text-sm" style={{ textAlign: 'center', padding: 24 }}>No sessions yet</div>
             ) : (
@@ -178,7 +187,7 @@ export default function FocusPage() {
                     </div>
                     <div className="flex gap-8" style={{ alignItems: 'center' }}>
                       <span className={`badge ${s.completed ? 'badge-offer' : 'badge-rejected'}`}>
-                        {s.completed ? '✓ Done' : 'Incomplete'}
+                        {s.completed ? 'Done' : 'Incomplete'}
                       </span>
                       <span className="text-muted">{new Date(s.sessionDate).toLocaleDateString()}</span>
                     </div>
