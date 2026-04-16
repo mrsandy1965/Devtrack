@@ -14,7 +14,7 @@ class TaskController {
       priority: [{ enum: VALID_PRIORITIES }],
     });
 
-    const { projectId } = req.params;
+    const projectId = req.params.id || req.params.projectId; // route uses :id
     const task = await TaskService.createTask(req.user.id, projectId, req.body);
     res.status(201).json({ success: true, task });
   });
