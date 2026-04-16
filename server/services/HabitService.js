@@ -2,6 +2,7 @@ const HabitRepository = require('../repositories/HabitRepository');
 const HabitLogRepository = require('../repositories/HabitLogRepository');
 const CareerScoreEngine = require('../utils/CareerScoreEngine');
 const UserRepository = require('../repositories/UserRepository');
+const AppError = require('../utils/AppError');
 
 class HabitService {
   async createHabit(userId, data) {
@@ -26,7 +27,7 @@ class HabitService {
 
   async logActivity(habitId, userId, logData = {}) {
     const habit = await HabitRepository.findById(habitId);
-    if (!habit) throw new Error('Habit not found');
+    if (!habit) throw new AppError('Habit not found', 404);
 
     // Create log entry
     const log = await HabitLogRepository.create({

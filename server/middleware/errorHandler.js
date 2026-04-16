@@ -1,32 +1,52 @@
-// Global error handler middleware
+/**
+ * Global error handler middleware.
+ * Distinguishes operational errors (AppError) from programmer bugs.
+ */
 const errorHandler = (err, req, res, next) => {
-  console.error(`[Error] ${err.message}`);
+  // Default values
+  let statusCode = err.statusCode || 500;
+  let message = err.message || 'Internal Server Error';
 
-  // Mongoose validation error
+  // Log stack trace only for unexpected errors in development
+  if (!err.isOperational) {
+    console.error('[Unexpected Error]', err);
+  }
+
+  // Mongoose: CastError (invalid ObjectId)
+  if (err.name === 'CastError') {
+    statusCode = 400;
+    message = `Invalid ${err.path}: ${err.value}`;
+  }
+
+  // Mongoose: ValidationError
   if (err.name === 'ValidationError') {
-    const messages = Object.values(err.errors).map((e) => e.message);
-    return res.status(400).json({ success: false, message: messages.join(', ') });
+    statusCode = 400;
+    message = Object.values(err.errors).map((e) => e.message).join(', ');
   }
 
-  // Mongoose duplicate key
+  // Mongoose: Duplicate key
   if (err.code === 11000) {
+    statusCode = 409;
     const field = Object.keys(err.keyValue)[0];
-    return res.status(400).json({
-      success: false,
-      message: `${field} already exists`,
-    });
+    message = `${field} already exists`;
   }
 
-  // JWT error
+  // JWT: invalid token
   if (err.name === 'JsonWebTokenError') {
-    return res.status(401).json({ success: false, message: 'Invalid token' });
+    statusCode = 401;
+    message = 'Invalid authentication token';
   }
 
-  // Known operational error
-  const statusCode = res.statusCode !== 200 ? res.statusCode : 500;
+  // JWT: expired token
+  if (err.name === 'TokenExpiredError') {
+    statusCode = 401;
+    message = 'Authentication token has expired. Please login again';
+  }
+
   res.status(statusCode).json({
     success: false,
-    message: err.message || 'Internal Server Error',
+    message,
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 };
 

@@ -1,63 +1,62 @@
 const InternshipService = require('../services/InternshipService');
+const asyncHandler = require('../utils/asyncHandler');
+const Validator = require('../utils/Validator');
+const AppError = require('../utils/AppError');
+
+const VALID_STATUSES = ['Applied', 'OA', 'Interview', 'Rejected', 'Offer'];
 
 class InternshipController {
-  async getApplications(req, res, next) {
-    try {
-      const apps = await InternshipService.getApplications(req.user.id);
-      res.status(200).json({ success: true, count: apps.length, applications: apps });
-    } catch (err) {
-      next(err);
-    }
-  }
+  getApplications = asyncHandler(async (req, res) => {
+    const apps = await InternshipService.getApplications(req.user.id);
+    res.status(200).json({ success: true, count: apps.length, applications: apps });
+  });
 
-  async addApplication(req, res, next) {
-    try {
-      const app = await InternshipService.addApplication(req.user.id, req.body);
-      res.status(201).json({ success: true, application: app });
-    } catch (err) {
-      next(err);
-    }
-  }
+  addApplication = asyncHandler(async (req, res) => {
+    Validator.assert(req.body, {
+      companyName: ['required', { maxLength: 120 }],
+      role:        ['required', { maxLength: 120 }],
+      status:      [{ enum: VALID_STATUSES }],
+    });
 
-  async updateApplication(req, res, next) {
-    try {
-      const app = await InternshipService.updateApplication(req.params.id, req.body);
-      res.status(200).json({ success: true, application: app });
-    } catch (err) {
-      next(err);
-    }
-  }
+    const app = await InternshipService.addApplication(req.user.id, req.body);
+    res.status(201).json({ success: true, application: app });
+  });
 
-  async updateStatus(req, res, next) {
-    try {
-      const { status } = req.body;
-      if (!status) {
-        return res.status(400).json({ success: false, message: 'Status is required' });
-      }
-      const app = await InternshipService.updateStatus(req.params.id, req.user.id, status);
-      res.status(200).json({ success: true, application: app });
-    } catch (err) {
-      next(err);
-    }
-  }
+  updateApplication = asyncHandler(async (req, res) => {
+    const app = await InternshipService.getApplicationById(req.params.id);
+    if (!app) throw new AppError('Application not found', 404);
+    if (app.userId.toString() !== req.user.id.toString()) throw new AppError('Not authorized', 403);
 
-  async deleteApplication(req, res, next) {
-    try {
-      await InternshipService.deleteApplication(req.params.id);
-      res.status(200).json({ success: true, message: 'Application deleted' });
-    } catch (err) {
-      next(err);
-    }
-  }
+    const updated = await InternshipService.updateApplication(req.params.id, req.body);
+    res.status(200).json({ success: true, application: updated });
+  });
 
-  async getStats(req, res, next) {
-    try {
-      const stats = await InternshipService.getStats(req.user.id);
-      res.status(200).json({ success: true, stats });
-    } catch (err) {
-      next(err);
-    }
-  }
+  updateStatus = asyncHandler(async (req, res) => {
+    Validator.assert(req.body, {
+      status: ['required', { enum: VALID_STATUSES }],
+    });
+
+    const app = await InternshipService.getApplicationById(req.params.id);
+    if (!app) throw new AppError('Application not found', 404);
+    if (app.userId.toString() !== req.user.id.toString()) throw new AppError('Not authorized', 403);
+
+    const updated = await InternshipService.updateStatus(req.params.id, req.user.id, req.body.status);
+    res.status(200).json({ success: true, application: updated });
+  });
+
+  deleteApplication = asyncHandler(async (req, res) => {
+    const app = await InternshipService.getApplicationById(req.params.id);
+    if (!app) throw new AppError('Application not found', 404);
+    if (app.userId.toString() !== req.user.id.toString()) throw new AppError('Not authorized', 403);
+
+    await InternshipService.deleteApplication(req.params.id);
+    res.status(200).json({ success: true, message: 'Application deleted' });
+  });
+
+  getStats = asyncHandler(async (req, res) => {
+    const stats = await InternshipService.getStats(req.user.id);
+    res.status(200).json({ success: true, stats });
+  });
 }
 
 module.exports = new InternshipController();

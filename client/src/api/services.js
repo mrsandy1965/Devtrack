@@ -41,3 +41,39 @@ export const githubAPI = {
 export const dashboardAPI = {
   get: () => api.get('/dashboard'),
 };
+
+// ── Projects ──────────────────────────────────────────────────────────────────
+export const projectsAPI = {
+  getAll:   ()         => api.get('/projects'),
+  create:   (data)     => api.post('/projects', data),
+  get:      (id)       => api.get(`/projects/${id}`),
+  update:   (id, data) => api.put(`/projects/${id}`, data),
+  archive:  (id)       => api.patch(`/projects/${id}/archive`),
+  delete:   (id)       => api.delete(`/projects/${id}`),
+  getTasks: (id, params) => api.get(`/projects/${id}/tasks`, { params }),
+  getBoard: (id)       => api.get(`/projects/${id}/board`),
+};
+
+// ── Tasks ─────────────────────────────────────────────────────────────────────
+export const tasksAPI = {
+  create:        (projectId, data) => api.post(`/projects/${projectId}/tasks`, data),
+  get:           (id)              => api.get(`/tasks/${id}`),
+  update:        (id, data)        => api.patch(`/tasks/${id}`, data),
+  delete:        (id)              => api.delete(`/tasks/${id}`),
+  reorder:       (updates)         => api.post('/tasks/reorder', { updates }),
+  addComment:    (id, content)     => api.post(`/tasks/${id}/comments`, { content }),
+  deleteComment: (id, commentId)   => api.delete(`/tasks/${id}/comments/${commentId}`),
+  search:        (q)               => api.get('/tasks/search', { params: { q } }),
+};
+
+// ── Cycles ────────────────────────────────────────────────────────────────────
+export const cyclesAPI = {
+  getAll:     (projectId)       => api.get(`/projects/${projectId}/cycles`),
+  create:     (projectId, data) => api.post(`/projects/${projectId}/cycles`, data),
+  get:        (projectId, id)   => api.get(`/projects/${projectId}/cycles/${id}`),
+  update:     (projectId, id, data) => api.put(`/projects/${projectId}/cycles/${id}`, data),
+  delete:     (projectId, id)   => api.delete(`/projects/${projectId}/cycles/${id}`),
+  addTask:    (projectId, id, taskId) => api.post(`/projects/${projectId}/cycles/${id}/tasks`, { taskId }),
+  removeTask: (projectId, id, taskId) => api.delete(`/projects/${projectId}/cycles/${id}/tasks/${taskId}`),
+};
+

@@ -1,68 +1,57 @@
 const HabitService = require('../services/HabitService');
+const asyncHandler = require('../utils/asyncHandler');
+const Validator = require('../utils/Validator');
+const AppError = require('../utils/AppError');
 
 class HabitController {
-  async getHabits(req, res, next) {
-    try {
-      const habits = await HabitService.getUserHabits(req.user.id);
-      res.status(200).json({ success: true, count: habits.length, habits });
-    } catch (err) {
-      next(err);
-    }
-  }
+  getHabits = asyncHandler(async (req, res) => {
+    const habits = await HabitService.getUserHabits(req.user.id);
+    res.status(200).json({ success: true, count: habits.length, habits });
+  });
 
-  async createHabit(req, res, next) {
-    try {
-      const habit = await HabitService.createHabit(req.user.id, req.body);
-      res.status(201).json({ success: true, habit });
-    } catch (err) {
-      next(err);
-    }
-  }
+  createHabit = asyncHandler(async (req, res) => {
+    Validator.assert(req.body, {
+      title:      ['required', { maxLength: 120 }],
+      type:       [{ enum: ['dsa', 'project', 'learning', 'other'] }],
+      recurrence: [{ enum: ['daily', 'weekly'] }],
+    });
 
-  async updateHabit(req, res, next) {
-    try {
-      const habit = await HabitService.updateHabit(req.params.id, req.body);
-      res.status(200).json({ success: true, habit });
-    } catch (err) {
-      next(err);
-    }
-  }
+    const habit = await HabitService.createHabit(req.user.id, req.body);
+    res.status(201).json({ success: true, habit });
+  });
 
-  async deleteHabit(req, res, next) {
-    try {
-      await HabitService.deleteHabit(req.params.id);
-      res.status(200).json({ success: true, message: 'Habit deactivated' });
-    } catch (err) {
-      next(err);
-    }
-  }
+  updateHabit = asyncHandler(async (req, res) => {
+    const habit = await HabitService.getHabitById(req.params.id);
+    if (!habit) throw new AppError('Habit not found', 404);
+    if (habit.userId.toString() !== req.user.id.toString()) throw new AppError('Not authorized', 403);
 
-  async logActivity(req, res, next) {
-    try {
-      const result = await HabitService.logActivity(req.params.id, req.user.id, req.body);
-      res.status(201).json({ success: true, ...result });
-    } catch (err) {
-      next(err);
-    }
-  }
+    const updated = await HabitService.updateHabit(req.params.id, req.body);
+    res.status(200).json({ success: true, habit: updated });
+  });
 
-  async getHeatmap(req, res, next) {
-    try {
-      const heatmap = await HabitService.getHeatmapData(req.user.id);
-      res.status(200).json({ success: true, heatmap });
-    } catch (err) {
-      next(err);
-    }
-  }
+  deleteHabit = asyncHandler(async (req, res) => {
+    const habit = await HabitService.getHabitById(req.params.id);
+    if (!habit) throw new AppError('Habit not found', 404);
+    if (habit.userId.toString() !== req.user.id.toString()) throw new AppError('Not authorized', 403);
 
-  async getLogs(req, res, next) {
-    try {
-      const logs = await HabitService.getHabitLogs(req.params.id);
-      res.status(200).json({ success: true, logs });
-    } catch (err) {
-      next(err);
-    }
-  }
+    await HabitService.deleteHabit(req.params.id);
+    res.status(200).json({ success: true, message: 'Habit deactivated' });
+  });
+
+  logActivity = asyncHandler(async (req, res) => {
+    const result = await HabitService.logActivity(req.params.id, req.user.id, req.body);
+    res.status(201).json({ success: true, ...result });
+  });
+
+  getHeatmap = asyncHandler(async (req, res) => {
+    const heatmap = await HabitService.getHeatmapData(req.user.id);
+    res.status(200).json({ success: true, heatmap });
+  });
+
+  getLogs = asyncHandler(async (req, res) => {
+    const logs = await HabitService.getHabitLogs(req.params.id);
+    res.status(200).json({ success: true, logs });
+  });
 }
 
 module.exports = new HabitController();

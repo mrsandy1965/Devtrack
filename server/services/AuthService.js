@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const UserRepository = require('../repositories/UserRepository');
+const AppError = require('../utils/AppError');
 
 class AuthService {
   _generateToken(userId) {
@@ -11,7 +12,7 @@ class AuthService {
   async register(name, email, password) {
     const existing = await UserRepository.findByEmailPublic(email);
     if (existing) {
-      throw new Error('An account with this email already exists');
+      throw new AppError('An account with this email already exists', 409);
     }
 
     const user = await UserRepository.create({ name, email, password });
@@ -31,12 +32,12 @@ class AuthService {
   async login(email, password) {
     const user = await UserRepository.findByEmail(email);
     if (!user) {
-      throw new Error('Invalid email or password');
+      throw new AppError('Invalid email or password', 401);
     }
 
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
-      throw new Error('Invalid email or password');
+      throw new AppError('Invalid email or password', 401);
     }
 
     const token = this._generateToken(user._id);
