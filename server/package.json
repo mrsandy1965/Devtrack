@@ -4,8 +4,8 @@
   "description": "DevTrack – Career Operating System backend",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "tsx index.ts",
+    "dev": "nodemon --exec tsx index.ts"
   },
   "dependencies": {
     "axios": "^1.6.0",
